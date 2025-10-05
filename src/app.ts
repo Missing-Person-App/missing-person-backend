@@ -1,5 +1,6 @@
-import express from "express"
+import express from "express";
 
+// initialising app
 const app = express()
 app.use(express.json())
 
