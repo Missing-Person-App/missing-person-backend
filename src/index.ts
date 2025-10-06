@@ -6,4 +6,4 @@ app.listen(config.port,()=>{
     console.log(`listening to port: ${config.port}`);
 })
 
-connectDb()
+connectDb();
