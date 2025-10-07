@@ -1,0 +1,12 @@
+import bcrypt from "bcrypt"
+
+export class Guards {
+
+   static hashPassword = (password : string) =>{
+        return bcrypt.hashSync(password,10)
+    }
+
+    static comparePassword = (password:string, hashPassword: string)=>{
+        return bcrypt.compareSync(password,hashPassword)
+    }
+}

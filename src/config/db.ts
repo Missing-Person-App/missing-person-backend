@@ -7,6 +7,9 @@ export const connectDb = async()=>{
         console.log("connection to db successfull");
     }
     catch(error:any){
-        console.log("error connecting db");
+        console.log("error connecting db",error)
+
+        // this stops the entire app when connection fails
+        process.exit(1)
     }
 }
