@@ -9,7 +9,8 @@ export interface IUser extends Document {
     verificationToken? : string,
     isVerified : boolean,
     resetPasswordToken? : string,
-    resetPasswordExpires? : Date
+    resetPasswordExpires? : Date,
+    role : "user"
 }
 
 const userSchema : Schema = new mongoose.Schema({
@@ -48,7 +49,12 @@ const userSchema : Schema = new mongoose.Schema({
     resetPasswordExpires:{
         type : Date,
         default: null
-    }
+    },
+     role:{
+            type: String,
+            enum: ["student"],
+            default: "student"
+        }
 },
 {timestamps:true})
 

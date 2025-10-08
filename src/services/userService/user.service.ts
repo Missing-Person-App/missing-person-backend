@@ -1,49 +1,99 @@
-import userModel from "../../models/userModel/userSchema.js";
-import type {IUser} from "../../models/userModel/userSchema.js"
+import userModel, { type IUser } from "../../models/userModel/userSchema.js";
 import { Guards } from "../../guards/guards.js";
-import crypto from "crypto"
+import crypto from "crypto";
+// import { error } from "console";
+
+
+type LoginData = {
+  email: string,
+  password: string
+}
 
 export class UserService {
-  // create new user
-
   async createUser(userData: IUser) {
     try {
-        const existingUser = await userModel.findOne({email : userData.email})
+      const existingUser = await userModel.findOne({ email: userData.email });
 
-        if(existingUser){
-            console.log("email already exists");
-        }
+      // find existing user
+      if (existingUser) {
+        return { error: "User already exists", data: null };
+      }
 
-        // hashing pasword before saving
-        const password =  Guards.hashPassword(userData.password)
+      // hash password
+      const hashedPassword = Guards.hashPassword(userData.password);
 
-        // generate verification token
+      // generate verification token
 
-        const verificationToken = crypto.randomBytes(32).toString("hex")
+      const verificationToken = crypto.randomBytes(32).toString("hex");
 
-        // creating a new user 
+      // create new user
 
-        const newUser = new userModel({
-            ...userData,
-            password,
-            verificationToken,
-            isVerified: false
-        })
+      const newUser = await new userModel({
+        ...userData,
+        password: hashedPassword,
+        verificationToken,
+        isVerified: false,
+      });
 
-        const savedUser = await newUser.save()
+      // save new user created
+      const savedUser = newUser.save();
 
-        try{
-            // send verification mail
-            
-        }
+      // send verifcation email
+      try {
+        // sendverifcation email
+      } catch (error) {
+        return { error: "sending verifcation mail failed", data: null };
+      }
 
-        catch(emailError){
-            console.log("failed to send verification email");
-            
-        }
-
+      return {
+        error: null,
+        data: "registration complete, check your mail to verify your account",
+      };
     } catch (error: any) {
-
+      return { error: error.message, data: null };
     }
   }
+
+
+  async userLogin(userData:LoginData){
+
+    try{
+
+      const user = await userModel.findOne({email:userData.email})
+
+      // find user
+      if(!user){
+        return { error : "User doesn't exist", data: null}
+      }
+
+      // is user verified
+
+      if(!user.isVerified){
+
+        return { error : "Your account is not verified yet", data: null}
+      }
+      // is password match
+
+      const isPasswordMatch = Guards.comparePassword(userData.password,user.password)
+      if(!isPasswordMatch){
+
+        return {error: "Invalid password", data:null}
+      }
+
+      // create jwt
+
+      const token = Guards.createJwt({
+        _id:user.id.toString(),
+        email : userData.email
+      })
+      return{error : null, data:`Login successful ${token}`}
+
+    }
+    catch(error:any){
+
+      return {error: error.message,data:null}
+    }
+
+  }
+
 }

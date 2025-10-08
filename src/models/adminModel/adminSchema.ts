@@ -9,7 +9,8 @@ export interface IAdmin extends Document {
     verificationToken? : string,
     isVerified : boolean,
     resetPasswordToken? : string,
-    resetPasswordExpires? : Date
+    resetPasswordExpires? : Date,
+    role: string
 }
 
 const adminSchema : Schema = new mongoose.Schema({
@@ -49,6 +50,10 @@ const adminSchema : Schema = new mongoose.Schema({
     resetPasswordExpires:{
         type : Date,
         default: null
+    },
+    role:{
+        type:String,
+        default : "admin"
     }
 },
 {timestamps:true})

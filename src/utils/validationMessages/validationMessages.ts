@@ -1,4 +1,4 @@
-export const validationMessages = {
+export const validationMessages ={
   firstname: {
     "any.required": "Please enter firstname",
     "string.empty": "Firstname cannot be empty",

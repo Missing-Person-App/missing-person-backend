@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { validationMessages } from "../utils/validationMesaages/validationMessages.js";
+import { validationMessages } from "../utils/validationMessages/validationMessages.js";
 
 // type safety for register
 type RegisterIput = {
