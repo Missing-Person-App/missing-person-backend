@@ -3,11 +3,10 @@ import { Guards } from "../../guards/guards.js";
 import crypto from "crypto";
 // import { error } from "console";
 
-
 type LoginData = {
-  email: string,
-  password: string
-}
+  email: string;
+  password: string;
+};
 
 export class UserService {
   async createUser(userData: IUser) {
@@ -28,7 +27,7 @@ export class UserService {
 
       // create new user
 
-      const newUser = await new userModel({
+      const newUser = new userModel({
         ...userData,
         password: hashedPassword,
         verificationToken,
@@ -36,7 +35,7 @@ export class UserService {
       });
 
       // save new user created
-      const savedUser = newUser.save();
+      const savedUser = await newUser.save();
 
       // send verifcation email
       try {
@@ -54,46 +53,43 @@ export class UserService {
     }
   }
 
-
-  async userLogin(userData:LoginData){
-
-    try{
-
-      const user = await userModel.findOne({email:userData.email})
+  // user login
+  async userLogin(userData: LoginData, password: any) {
+    try {
+      const user = await userModel.findOne({ email: userData.email });
 
       // find user
-      if(!user){
-        return { error : "User doesn't exist", data: null}
+      if (!user) {
+        return { error: "Invalid email or password", data: null };
       }
 
       // is user verified
 
-      if(!user.isVerified){
-
-        return { error : "Your account is not verified yet", data: null}
+      if (!user.isVerified) {
+        return { error: "Your account is not verified yet", data: null };
       }
       // is password match
 
-      const isPasswordMatch = Guards.comparePassword(userData.password,user.password)
-      if(!isPasswordMatch){
-
-        return {error: "Invalid password", data:null}
+      const isPasswordMatch = Guards.comparePassword(
+        userData.password,
+        user.password
+      );
+      if (!isPasswordMatch) {
+        return { error: "Invalid email or password", data: null };
       }
 
       // create jwt
 
       const token = Guards.createJwt({
-        _id:user.id.toString(),
-        email : userData.email
-      })
-      return{error : null, data:`Login successful ${token}`}
+        _id: user.id.toString(),
+        email: user.email,
+      });
 
+      return { error: null, data: `Login successful ${token}` };
+    } 
+    catch (error: any) {
+      return { error: error.message, data: null };
     }
-    catch(error:any){
-
-      return {error: error.message,data:null}
-    }
-
   }
 
 }

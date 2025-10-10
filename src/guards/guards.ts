@@ -22,7 +22,7 @@ export class Guards {
 static createJwt (user:any){
     const token = jwt.sign(
         {
-            _id:user._id,
+            id:user._id,
             email: user.email,
             role: user.role
         },
